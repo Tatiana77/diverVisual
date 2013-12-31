@@ -26,6 +26,16 @@ public class DiverVisualMBean {
 
 	private float sWLat = 0;
 
+	private Country currentCountry;
+
+	public Country getCurrentCountry() {
+		return currentCountry;
+	}
+
+	public void setCurrentCountry(final Country currentCountry) {
+		this.currentCountry = currentCountry;
+	}
+
 	public AlgorithmType[] getAlgorithmTypes() {
 		return AlgorithmType.values();
 	}

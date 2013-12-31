@@ -8,7 +8,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="<c:url value="/resources/form.css" />" rel="stylesheet"
 	type="text/css" />
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="<c:url value="/resources/jquery/1.10.2/jquery.js" />"></script>
 </head>
 <body>
 	<div id="formsContent">
@@ -33,6 +34,11 @@
 		  			Percentage <form:errors path="percentage" cssClass="error" />
 				</form:label>
 				<form:input path="percentage" />
+
+				<form:label path="population">
+		  			City population <form:errors path="population" cssClass="error" />
+				</form:label>
+				<form:input path="population" />
 			</fieldset>
 
 			<div id="byCountry">
@@ -52,11 +58,6 @@
 			<div id="byMap" style="display: none;">
 				<fieldset>
 					<legend>Map data:</legend>
-
-					<form:label path="population">
-		  			Population <form:errors path="population" cssClass="error" />
-					</form:label>
-					<form:input path="population" />
 
 					<form:label path="nELat">
 		  			NE Latitude <form:errors path="nELat" cssClass="error" />
@@ -105,7 +106,7 @@
 
 		window.myData.mapExists = false;
 
-		function drawOutMap(data) {
+		function drawOutMap(data, diverData) {
 			var drawDataBorders = false;
 			var selectedType = $('#inputType').val();
 			if (selectedType == "country") {
@@ -123,6 +124,7 @@
 				zoom : zoom
 			});
 			drawMap(data, outMap);
+			drawMap2(diverData, outMap);
 			// if is map, draw borders
 			if (drawDataBorders && window.myData.box != null) {
 				var dataBorders = new google.maps.Rectangle({
@@ -193,9 +195,7 @@
 															type : "post",
 															url : "ajax/process.json",
 															data : JSON
-																	.stringify($(
-																			'#form')
-																			.serializeObject()),
+																	.stringify($('#form').serializeObject()),
 															dataType : 'json',
 															beforeSend : function(
 																	xhr) {
@@ -216,24 +216,38 @@
 
 																var status = parsed.status;
 																if (status == "OK") {
-																	var cities = parsed.cities;
-																	var citiesData = [];
-																	for (var i = 0; i < cities.length; i++) {
+																	var allCities = parsed.allCities;
+																	var allCitiesData = [];
+																	for (var i = 0; i < allCities.length; i++) {
 																		var temp = [];
 																		temp
-																				.push(cities[i].latitude);
+																				.push(allCities[i].latitude);
 																		temp
-																				.push(cities[i].longitude);
+																				.push(allCities[i].longitude);
 																		temp
-																				.push(cities[i].city);
-																		citiesData
+																				.push(allCities[i].city);
+																		allCitiesData
+																				.push(temp);
+																	}
+																	var diversifiedCities = parsed.diversifiedCities;
+																	var diversifiedCitiesData = [];
+																	for (var i = 0; i < diversifiedCities.length; i++) {
+																		var temp = [];
+																		temp
+																				.push(diversifiedCities[i].latitude);
+																		temp
+																				.push(diversifiedCities[i].longitude);
+																		temp
+																				.push(diversifiedCities[i].city);
+																		diversifiedCitiesData
 																				.push(temp);
 																	}
 																	if (typeof overlay != 'undefined') {
 																		overlay
 																				.setMap(null);
 																	}
-																	overlay = drawOutMap(citiesData);
+																	overlay = drawOutMap(allCitiesData, diversifiedCitiesData);
+
 																	$msg.removeClass("error info warning");
 																	$msg.addClass("info");
 																	$msg.html("Ok");

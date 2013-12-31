@@ -24,7 +24,8 @@ public class FormResponse {
 
 	private String status;
 
-	private City[] cities;
+	private City[] allCities;
+	private City[] diversifiedCities;
 
 	public List<Error> getErrors() {
 		return errors;
@@ -34,12 +35,20 @@ public class FormResponse {
 
 	private final List<Error> errors = new ArrayList<>();
 
-	public City[] getCities() {
-		return cities;
+	public City[] getAllCities() {
+		return allCities;
 	}
 
-	public void setCities(final City[] cities) {
-		this.cities = cities;
+	public void setAllCities(final City[] allCities) {
+		this.allCities = allCities;
+	}
+
+	public City[] getDiversifiedCities() {
+		return diversifiedCities;
+	}
+
+	public void setDiversifiedCities(final City[] diversifiedCities) {
+		this.diversifiedCities = diversifiedCities;
 	}
 
 	public String getStatus() {
@@ -58,7 +67,7 @@ public class FormResponse {
 		this.message = message;
 	}
 
-	public void addError(final String field , final String message){
+	public void addError(final String field, final String message) {
 		errors.add(new Error(field, message));
 	}
 

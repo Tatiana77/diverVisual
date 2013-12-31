@@ -61,7 +61,12 @@ public class HomeController {
 
 	}
 
-	@RequestMapping(value = "/ajax/process", method = RequestMethod.POST, produces = "application/json", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/editCountries", method = RequestMethod.GET)
+	public String editCountries() {
+		return "editCountries";
+	}
+
+	@RequestMapping(value = "/ajax/process", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public @ResponseBody
 	FormResponse process(@Valid @RequestBody final DiverVisualMBean formBean, final BindingResult result,
 			final Model model) {
@@ -79,7 +84,7 @@ public class HomeController {
 			return errorResponse;
 		}
 		FormResponse response = new FormResponse(OK);
-		response.setCities(processCalculation(formBean));
+		processCalculation(formBean, response);
 		return response;
 
 	}
@@ -89,37 +94,39 @@ public class HomeController {
 	 * 
 	 * @param formBean
 	 *            the form bean
+	 * @param response
 	 * @return the city[]
 	 */
-	private City[] processCalculation(final DiverVisualMBean formBean) {
-		City[] input = null;
-		City[] output = null;
+	private void processCalculation(final DiverVisualMBean formBean, final FormResponse response) {
+		City[] allCities = null;
+		City[] diversifiedCities = null;
 		// Check the calculation type
 		AlgorithmType type = AlgorithmType.fromValue(formBean.getAlgorithm());
 		if (type != null) {
-			input = getData(formBean.getInputType(), formBean);
-			Assert.notNull(input, "A input type must be set");
-			int numberOfCities = input.length;
+			allCities = getData(formBean.getInputType(), formBean);
+			Assert.notNull(allCities, "A input type must be set");
+			int numberOfCities = allCities.length;
 
 			// If found cities, calculate
 			if (numberOfCities > 0) {
 				int k = Math.round(numberOfCities * formBean.getPercentage() / 100);
 				switch (type) {
 				case MAX_SUM:
-					output = calculationService.calculateMaxSum(input, k);
+					diversifiedCities = calculationService.calculateMaxSum(allCities, k);
 					break;
 				case MIN_DIV:
-					output = calculationService.calculateMinDiv(input, k);
+					diversifiedCities = calculationService.calculateMinDiv(allCities, k);
 					break;
 				default:
 					break;
 				}
 			} else {
 				// If not, return empty array
-				output = new City[0];
+				diversifiedCities = new City[0];
 			}
 		}
-		return output;
+		response.setAllCities(allCities);
+		response.setDiversifiedCities(diversifiedCities);
 	}
 
 	private City[] getData(final String inputType, final DiverVisualMBean formBean) {

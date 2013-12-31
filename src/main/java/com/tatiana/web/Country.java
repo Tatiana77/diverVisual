@@ -2,9 +2,13 @@ package com.tatiana.web;
 
 public class Country {
 
-	private final String name;
+	private String name;
 
-	private final String code;
+	private String code;
+
+	public Country() {
+		super();
+	}
 
 	public Country(final String name, final String code) {
 		super();
@@ -14,6 +18,14 @@ public class Country {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void setCode(final String code) {
+		this.code = code;
 	}
 
 	public String getCode() {

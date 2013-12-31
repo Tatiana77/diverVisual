@@ -1,3 +1,5 @@
+//Extends jquery
+
 $.fn.serializeObject = function()
 {
     var o = {};
