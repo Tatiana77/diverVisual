@@ -12,12 +12,10 @@ public class Main {
 		Class.forName("com.mysql.jdbc.Driver");
 
 		// Creating a variable for the connection called "con"
-		Connection con = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/divervis", "root", "");
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/divervis", "root", "");
 
 		// Creating a query
-		PreparedStatement statement = con
-				.prepareStatement("select * from city where country_code ='ec'");
+		PreparedStatement statement = con.prepareStatement("select * from city where country_code ='ec'");
 
 		// Creating a variable to execute query
 		ResultSet result = statement.executeQuery();
@@ -57,10 +55,8 @@ public class Main {
 		int j = 0;
 		result.beforeFirst();
 		while (result.next()) {
-			City c = new City(result.getString(1), result.getString(2),
-					result.getString(3), result.getString(4),
-					result.getLong(5), result.getBigDecimal(6),
-					result.getBigDecimal(7));
+			City c = new City(result.getString(1), result.getString(2), result.getString(3), result.getString(4),
+					result.getLong(5), result.getBigDecimal(6), result.getBigDecimal(7));
 			citiesArray[j] = c;
 			j++;
 		}
@@ -71,17 +67,17 @@ public class Main {
 		 */
 
 		long startTime = System.nanoTime();
-		MaxSum maxSum = new MaxSum();
-		City[] diversifiedCities = maxSum.kSetCities(citiesArray, 20);
-		System.out.println("City,Latitude,Longitude");
-		for (i = 0; i < diversifiedCities.length; i++) {
-			System.out.println(diversifiedCities[i]);
-		}
+		/*
+		 * MaxSum maxSum = new MaxSum(); City[] diversifiedCities =
+		 * maxSum.kSetCities(citiesArray, 20);
+		 * System.out.println("City,Latitude,Longitude"); for (i = 0; i <
+		 * diversifiedCities.length; i++) {
+		 * System.out.println(diversifiedCities[i]); }
+		 */
 
 		long estimatedTime = System.nanoTime() - startTime;
 
-		System.out.println("Elapsed time of max sum with treemap: "
-				+ estimatedTime / 1000000000.0);
+		System.out.println("Elapsed time of max sum with treemap: " + estimatedTime / 1000000000.0);
 
 		/*
 		 * System.out.println(i + "\t" + result.getString(1) + "\t" +

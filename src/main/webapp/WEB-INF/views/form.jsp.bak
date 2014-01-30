@@ -110,27 +110,21 @@
 		window.myData.mapExists = false;
 		
 		function pollStatus(){
-			   setTimeout(function(){
-			      $.ajax({ url: "ajax/status.json", success: function(data){
-			    	  if (!window.statusError){
-			    		  if (!window.stop) {
-			    	 	     $("#msg").html(data.message + " " + data.progress);
-                    		  pollStatus();
-                     	 	}
-                     	 }
-			      }, dataType: "json",
-					beforeSend : function(
-							xhr) {
-						xhr
-								.setRequestHeader(
-										"Accept",
-										"application/json");
-						xhr
-								.setRequestHeader(
-										"Content-Type",
-										"application/json");
-					},});
-			  }, 5000);
+			setTimeout(function(){
+				$.ajax({
+					url: "ajax/status.json", 
+					success: function(data) {
+					if(!window.statusError){//que es esto?
+						if(!window.stop){
+							$("#msg").html(data.message + " " + data.progress);
+							pollStatus();
+						}
+					    }
+					}, 
+				 	dataType: "json"
+					});
+			   }, 
+			   2000);
 		     
 		}
 

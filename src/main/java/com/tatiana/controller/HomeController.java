@@ -1,7 +1,10 @@
 package com.tatiana.controller;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ import com.tatiana.web.Country;
 import com.tatiana.web.DiverVisualMBean;
 import com.tatiana.web.DiverVisualMBeanValidator;
 import com.tatiana.web.FormResponse;
+import com.tatiana.web.Status;
 
 @Controller
 @SessionAttributes("formBean")
@@ -42,6 +46,12 @@ public class HomeController {
 	private static final String ERROR = "ERROR";
 
 	private static final String OK = "OK";
+
+	private static final String ID = "id";
+
+	private final AtomicInteger processCounter = new AtomicInteger();
+
+	private final ConcurrentHashMap<Integer, Status> statusMap = new ConcurrentHashMap<Integer, Status>();
 
 	@Autowired
 	private DataService dataService;
@@ -66,10 +76,46 @@ public class HomeController {
 		return "editCountries";
 	}
 
+	@RequestMapping(value = "/ajax/status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Status getStatus(final HttpSession session) {
+		Status status = checkStatus(session);
+		return status;
+	}
+
+	private Status checkStatus(final HttpSession session) {
+		Status status = null;
+		Integer id = (Integer) session.getAttribute(ID);
+		if (id != null) {
+			status = statusMap.get(id);
+		}
+		if (id == null || status == null) {
+			id = processCounter.incrementAndGet();
+			session.setAttribute(ID, id);
+			status = new Status("Processing");
+			status.setId(id);
+			logger.debug("Storing status id: " + id);
+			statusMap.put(id, status);
+		} else {
+			status = statusMap.get(id);
+		}
+		return status;
+	}
+
+	private void clearStatus(final HttpSession session) {
+		Integer id = (Integer) session.getAttribute(ID);
+		if (id != null) {
+			logger.debug("Cleanning status id: " + id);
+			statusMap.remove(id);
+			session.removeAttribute(ID);
+		}
+	}
+
 	@RequestMapping(value = "/ajax/process", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public @ResponseBody
 	FormResponse process(@Valid @RequestBody final DiverVisualMBean formBean, final BindingResult result,
-			final Model model) {
+			final Model model, final HttpSession session) {
+		Status status = checkStatus(session);
 		logger.debug("Processing: " + formBean);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_PLAIN);
@@ -84,7 +130,15 @@ public class HomeController {
 			return errorResponse;
 		}
 		FormResponse response = new FormResponse(OK);
-		processCalculation(formBean, response);
+		try {
+			processCalculation(formBean, response, status);
+		} catch (Exception exception) {
+			response.setStatus("ERROR");
+			response.addError(null, "Calculation error!");
+			response.addError(null, exception.toString());
+			logger.error("Calculation error", exception);
+		}
+		clearStatus(session);
 		return response;
 
 	}
@@ -97,25 +151,28 @@ public class HomeController {
 	 * @param response
 	 * @return the city[]
 	 */
-	private void processCalculation(final DiverVisualMBean formBean, final FormResponse response) {
+	private void processCalculation(final DiverVisualMBean formBean, final FormResponse response, final Status status) {
 		City[] allCities = null;
 		City[] diversifiedCities = null;
 		// Check the calculation type
 		AlgorithmType type = AlgorithmType.fromValue(formBean.getAlgorithm());
-		if (type != null) {
+		if (type != null && status != null) {
+			status.setMessage("Loading data...");
 			allCities = getData(formBean.getInputType(), formBean);
 			Assert.notNull(allCities, "A input type must be set");
 			int numberOfCities = allCities.length;
-
+			logger.debug(numberOfCities + " cities found");
 			// If found cities, calculate
-			if (numberOfCities > 0) {
+			if (numberOfCities > 1) {
 				int k = Math.round(numberOfCities * formBean.getPercentage() / 100);
 				switch (type) {
 				case MAX_SUM:
-					diversifiedCities = calculationService.calculateMaxSum(allCities, k);
+					status.setMessage("Calculating sum max");
+					diversifiedCities = calculationService.calculateMaxSum(allCities, k, status.getId(), statusMap);
 					break;
 				case MIN_DIV:
-					diversifiedCities = calculationService.calculateMinDiv(allCities, k);
+					status.setMessage("Calculating min div");
+					diversifiedCities = calculationService.calculateMinDiv(allCities, k, status.getId(), statusMap);
 					break;
 				default:
 					break;
@@ -123,6 +180,8 @@ public class HomeController {
 			} else {
 				// If not, return empty array
 				diversifiedCities = new City[0];
+				response.setStatus("ERROR");
+				response.addError(null, "Must have more than 1 city to calculate");
 			}
 		}
 		response.setAllCities(allCities);

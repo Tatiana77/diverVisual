@@ -2,6 +2,9 @@ package com.tatiana.model.diverAlgorithms;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.tatiana.web.Status;
 
 /**
  * The Class MaxSum.
@@ -10,18 +13,27 @@ public class MaxSum extends CalculationBase {
 
 	/**
 	 * K set cities.
-	 *
-	 * @param X the x
-	 * @param k the k
-	 * @return the city[]
+	 * 
+	 * @param X
+	 *            The set of all the cities
+	 * @param k
+	 *            the number of diversified cities to be retrieved
+	 * @return the set of k diversified cities in an array
 	 */
+
+	public MaxSum(final Integer id, final ConcurrentHashMap<Integer, Status> statusMap) {
+		super(id, statusMap);
+	}
+
 	public City[] kSetCities(final City[] X, final int k) {
 		City[] S = new City[k];
 		int[] reference = new int[k];
 
 		maxPair max = new maxPair();
 		// Calculate similarity matrix of cities in X
-		float[][] simMatrix = SimilarityMatrix.simMatrix(X, max);
+		setMessage("Calculating similarity matrix...");
+		SimilarityMatrix matrix = new SimilarityMatrix(this);
+		float[][] simMatrix = matrix.simMatrix(X, max);
 		// SimilarityMatrix.printSimMatrixWithTitles(simMatrix, X);
 		// System.out.println(max.getDist());
 
@@ -37,6 +49,7 @@ public class MaxSum extends CalculationBase {
 		Map<Integer, Float> setDistance = new HashMap<Integer, Float>();
 
 		for (int i = 0; i < X.length; i++) {
+			setMessage("Setting distances...");
 			setDistance.put(i, simMatrix[x][i]);
 		}
 
@@ -48,10 +61,11 @@ public class MaxSum extends CalculationBase {
 			return S;
 		}
 
+		setMessage("Calculating...");
 		for (int j = 2; j < k; j++) {
+			setProgress(j, k);
 			for (int i = 0; i < X.length; i++) {
-				setDistance.put(i,
-						(setDistance.get(i) + simMatrix[reference[j - 1]][i]));
+				setDistance.put(i, (setDistance.get(i) + simMatrix[reference[j - 1]][i]));
 			}
 			maximum = max(setDistance, reference);
 			S[j] = X[maximum];
@@ -60,6 +74,5 @@ public class MaxSum extends CalculationBase {
 
 		return S;
 	}
-
 
 }

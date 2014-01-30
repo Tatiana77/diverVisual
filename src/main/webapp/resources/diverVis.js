@@ -61,10 +61,10 @@ function drawMap2(data2, map) {
 					.attr("cy", padding).style("fill", "red");
 
 			// Add a label.
-			marker.append("svg:text").attr("x", padding + 7).attr("y", padding)
-					.attr("dy", "1em").text(function(d) {
-						return d.value[2];
-					});
+//			marker.append("svg:text").attr("x", padding + 7).attr("y", padding)
+//					.attr("dy", "1em").text(function(d) {
+//						return d.value[2];
+//					});
 
 			function transform(d) {
 				d = new google.maps.LatLng(d.value[0], d.value[1]);

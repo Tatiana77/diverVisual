@@ -250,6 +250,11 @@
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
+				<configuration>
+					<systemProperties>
+						<JAVA_OPTS>-Xms256m -Xmx512m -XX:MaxPermSize=512m</JAVA_OPTS>
+					</systemProperties>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

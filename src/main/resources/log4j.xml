@@ -10,6 +10,24 @@
 		</layout>
 	</appender>
 
+	<appender name="file" class="org.apache.log4j.FileAppender">
+		<param name="File" value="logs/app.log" />
+		<param name="Threshold" value="DEBUG" />
+		<param name="append" value="false" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="fileMine" class="org.apache.log4j.FileAppender">
+		<param name="File" value="logs/mine.log" />
+		<param name="Threshold" value="DEBUG" />
+		<param name="append" value="false" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
+		</layout>
+	</appender>
+
 	<!-- Application Loggers -->
 	<logger name="com.tatiana">
 		<level value="debug" />
@@ -31,11 +49,17 @@
 	<logger name="org.springframework.web">
 		<level value="debug" />
 	</logger>
+	
+	<logger name="com.tatiana">
+		<level value="debug" />
+		<appender-ref ref="fileMine" />
+	</logger>
 
 	<!-- Root Logger -->
 	<root>
 		<priority value="debug" />
 		<appender-ref ref="console" />
+		<appender-ref ref="file" />
 	</root>
 
 </log4j:configuration>
