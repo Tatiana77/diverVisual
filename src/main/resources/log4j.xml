@@ -30,7 +30,7 @@
 
 	<!-- Application Loggers -->
 	<logger name="com.tatiana">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 
 	<!-- 3rdparty Loggers -->
@@ -51,13 +51,13 @@
 	</logger>
 	
 	<logger name="com.tatiana">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="fileMine" />
 	</logger>
 
 	<!-- Root Logger -->
 	<root>
-		<priority value="debug" />
+		<priority value="info" />
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />
 	</root>

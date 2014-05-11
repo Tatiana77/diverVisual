@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.tatiana.model.diverAlgorithms.City;
 import com.tatiana.model.diverAlgorithms.MaxSum;
-import com.tatiana.model.diverAlgorithms.MinDiv;
+import com.tatiana.model.diverAlgorithms.MaxMin;
 import com.tatiana.service.CalculationService;
 import com.tatiana.web.Status;
 
@@ -47,7 +47,7 @@ public class CalculationServiceImpl implements CalculationService {
 	public City[] calculateMinDiv(final City[] input, final int k, final Integer id,
 			final ConcurrentHashMap<Integer, Status> statusMap) {
 		logger.debug("Calculating by: Min Div Points: " + input.length);
-		MinDiv minDiv = new MinDiv(id, statusMap);
+		MaxMin minDiv = new MaxMin(id, statusMap);
 		City[] dcities = minDiv.kSetCities(input, k);
 		minDiv = null;
 		System.gc();
