@@ -34,7 +34,7 @@ public class DBConnectImplTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testGenerateCities(){
 		String country = "";
 		int population = 1000;

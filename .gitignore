@@ -3,4 +3,6 @@
 /db
 bin
 log.txt
+out.txt
+.springBeans
 /logs
