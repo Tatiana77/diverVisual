@@ -39,15 +39,15 @@ import com.tatiana.data.DBConnectImpl;
 @PropertySource("classpath:application.properties")
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 
-	private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-	private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
-	private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
-	private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
+	public static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+	public static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
+	public static final String PROPERTY_NAME_DATABASE_URL = "db.url";
+	public static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
 
 	private static final Logger logger = LoggerFactory.getLogger(DBConnectImpl.class);
 
 	@Resource
-	private Environment env;
+	public Environment env;
 
 	/*
 	 * (non-Javadoc)

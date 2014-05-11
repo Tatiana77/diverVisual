@@ -38,7 +38,7 @@ public class DBConnectImpl implements DBConnect {
 	@Override
 	public Map<String, String> getCountryNames() {
 		Statement stmt = null;
-		String query = "select country_code, country_name from diverVis.country order by country_name asc";
+		String query = "select country_code, country_name from country order by country_name asc";
 		Map<String, String> countries = new LinkedHashMap<>();
 		try {
 			Connection conn = getConnection();
@@ -64,7 +64,7 @@ public class DBConnectImpl implements DBConnect {
 	@Override
 	public City[] generateCities(final String country, final int population) {
 		Statement stmt = null;
-		String query = "select * from diverVis.city where country_code = '"
+		String query = "select * from city where country_code = '"
 				+ country + "' and population > " + population;
 		System.out.println("The query is: " + query);
 		try {
